@@ -46,6 +46,11 @@ int main() {
             enqueueFlights(flightId);
             break;
         }
+        case '2':{
+            printf("\nPlease Enter Flight ID: ");
+            scanf("%d",&flightId);
+            enqueueFlights(flightId,"departure");
+            break;
         case '4':{
             displayReports();
             //exit(0);
