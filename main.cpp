@@ -1,6 +1,7 @@
-#include <iostream>
-#include <string>
+#include <stdio.h>
 #include <stdlib.h>
+#include <conio.h>
+
 struct arival{
     int flightId,fuel,runwayId;
     char destination;
@@ -17,7 +18,7 @@ struct queueOne{
 }landingQueue1,landingQueue2,takeoffQueue1,takeoffQueue2;
 
 int size = 5; //size of queue, globally declared to access it anywhere in the program.
-bool enqueueFlights(int number,char status[]);  //Function for making queues of flights
+bool enqueueFlights(int number,int status);  //Function for making queues of flights
 int dequeueFlights();
 bool isEmpty ();
 bool isFull();
@@ -27,38 +28,39 @@ int main() {
     char ch;
     int flightId;
     a:
-    system("CLS");
     printf("\nPress 1 for Arival\nPress 2 For Departure\nPress 3 For Emergency\nPress 4 to Display Reports\n");
-    scanf("%ch",&ch);
+    ch = getche();
     switch(ch){
         case '1': {
-            printf("\nPlease Enter Flight ID: ");
+        	//system("CLS");
+            printf("\nPlease Enter Arival Flight ID: ");
             scanf("%d",&flightId);
-            enqueueFlights(flightId,"arival");
+            enqueueFlights(flightId,1);
             break;
         }
         case '2':{
-            printf("\nPlease Enter Flight ID: ");
+            printf("\nPlease Enter Departure Flight ID: ");
             scanf("%d",&flightId);
-            enqueueFlights(flightId,"departure");
+            enqueueFlights(flightId,2);
             break;
         }
         case '4':{
             displayReports();
+            //exit(0);
             break;
         }
-        case '\n': break;
         default:
             printf("\nWrong Press!");
     }
     goto a;
 
 }
-bool enqueueFlights(int number,char status[]) {
-    if(isFull()){
+bool enqueueFlights(int number,int status) {
+    if(isFull() == true){
+    	printf("\nQueue is FULL!\n");
         return false;
     }
-    if(status == "arival") {
+    if(status == 1) {
         if (landingQueue1.counter <= landingQueue2.counter) {
             printf("\nlandingQueue1.counter <= landingQueue2.counter");
             landingQueue1.queues[landingQueue1.tail++] = number;
@@ -73,7 +75,7 @@ bool enqueueFlights(int number,char status[]) {
         printf("\nlandingQueue1Tail: %d", landingQueue1.tail);
         printf("\nlandingQueue2Tail: %d", landingQueue2.tail);
     }
-    else if(status == "departure"){
+    else if(status == 2){
         if (takeoffQueue1.counter <= takeoffQueue2.counter) {
             printf("\ntakeOffQueue1.counter <= takeOffQueue2.counter");
             takeoffQueue1.queues[takeoffQueue1.tail++] = number;
@@ -99,14 +101,17 @@ void displayReports() {
 }
 
 bool isFull() {
-    if(landingQueue1.counter || landingQueue2.counter >= size){
+    printf("\nlandingQueue1: %d", landingQueue1.counter);
+    printf("\nlandingQueue2: %d", landingQueue2.counter);
+
+    if((landingQueue1.counter || landingQueue2.counter || takeoffQueue1.counter || takeoffQueue2.counter) >= size ){
         return true;
     }
     return false;
 }
 
 bool isEmpty() {
-    if(landingQueue1.counter || landingQueue2.counter >= 0){
+    if((landingQueue1.counter || landingQueue2.counter || takeoffQueue1.counter || takeoffQueue2.counter) >= 0){
         return true;
     }
     return false;
