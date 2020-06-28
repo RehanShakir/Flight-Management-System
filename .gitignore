@@ -42,6 +42,21 @@
 *.idb
 *.pdb
 
+# xml files
+*.xml
+
+# text files
+*.txt
+
+# rsp files
+*.rsp
+
+# cmake files
+*.cmake
+
+# log files
+*.log
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
