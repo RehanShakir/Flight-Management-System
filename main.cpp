@@ -29,12 +29,12 @@ struct stack{
 struct queue{
     int front,tail,counter;
     int queues[5];
-}landingQueue1,landingQueue2,takeoffQueue1,takeoffQueue2,emergencyQueue;
+}landingQueue1 = {0},landingQueue2 = {0},takeoffQueue1 = {0},takeoffQueue2 = {0},emergencyQueue = {0};
 
 //Function Prototypes
 bool enqueueFlights(int number,int status);
 int dequeueFlights();
-void flightDetails();
+void arrivalFlightsDetails();
 bool isEmpty ();
 bool isFull();
 void displayReports();
@@ -52,7 +52,7 @@ int main() {
             printf("\nPlease Enter Arrival Flight ID: ");
             scanf("%d",&flightId);
             arrival[k].flightId = flightId;
-            flightDetails();
+            arrivalFlightsDetails();
             enqueueFlights(flightId,1);
             break;
         }
@@ -76,10 +76,16 @@ int main() {
         default:
             printf("\nWrong Press!");
     }
+    printf("\nFlight no %d is ready for Landing, Press Y for confirmation for landing\n",arrival[0].flightId);
+    ch = getche();
+    if(ch == 'y' || ch == 'Y'){
+        dequeueFlights();
+    }else{
+        goto a;
+    }
     goto a;
-
 }
-void flightDetails(){             //Setting all the flight details
+void arrivalFlightsDetails(){             //Setting all the flight details
 
     printf("\nPlease Enter the Following details of coming flight\n");
 
@@ -98,7 +104,7 @@ void flightDetails(){             //Setting all the flight details
     arrival[k].arivalDate.year = tm.tm_year;
 
     arrival[k].waitingTime.hours = arrival[k].landingTime.hours - arrival[k].arivalTime.hours;
-    arrival[k].waitingTime.min = arrival[k].landingTime.min - arrival[k].arivalTime.min;
+    arrival[k].waitingTime.min = arrival[k].landingTime.min - arrival[k].arivalTime.min;             //waiting time
     arrival[k].waitingTime.sec = arrival[k].landingTime.sec - arrival[k].arivalTime.sec;
 
     arrival[k].landingTime.hours  = tm.tm_hour;
@@ -136,9 +142,7 @@ bool enqueueFlights(int number,int status) {           //Making queues of flight
         for(int j=0; j<5; j++) {
             if (landingQueue1.queues[j] == number || landingQueue2.queues[j] == number) {
                 if(landingQueue1.queues[j] == number){
-                    printf("\nLanding QueueONE index=%d Emergency Flight = %d\n",j,number);
                 } else if(landingQueue2.queues[j] == number){
-                    printf("\nLanding QueueTWO index=%d Emergency Flight = %d\n",j,number);
                 }
                 emergencyQueue.queues[emergencyQueue.tail++] = number;
                 emergencyQueue.counter++;
@@ -163,7 +167,42 @@ bool enqueueFlights(int number,int status) {           //Making queues of flight
     }
     return true;
 }
+// for
+int dequeueFlights(){
+    int emergencyFlight,regularFlight1,regularFlight2;
+    if(isEmpty()){
+        printf("\nNo Flight left\n");
+        return -99999;
+    }
+    if(emergencyQueue.counter >= 0){
+        emergencyFlight = emergencyQueue.queues[emergencyQueue.front];
+        for(int i=0; i<emergencyQueue.tail; i++){
+            emergencyQueue.queues[i] = emergencyQueue.queues[i+1];
+            emergencyQueue.tail--;
+        }
+        printf("\nEmergency Flight No %d is Landed Successfully",emergencyFlight);
+    }else {
+        regularFlight1 = landingQueue1.queues[landingQueue1.front];
+        for (int i = 0; i <= landingQueue1.tail; i++) {
+            landingQueue1.queues[i] = landingQueue1.queues[i + 1];
+            landingQueue1.tail--;
+        }
+        printf("\nFlight No %d is Landed Successfully on Runway Id %d\n", regularFlight1,
+               arrival[landingQueue1.counter].runwayId);
 
+
+        regularFlight2 = landingQueue2.queues[landingQueue2.front];
+        for (int i = 0; i <= landingQueue2.tail; i++) {
+            landingQueue2.queues[i] = landingQueue2.queues[i + 1];
+            landingQueue2.tail--;
+        }
+        printf("\nFlight No %d is Landed Successfully on Runway Id %d\n", regularFlight2,
+               arrival[landingQueue2.counter].runwayId);
+    }
+
+
+
+}
 void displayReports() {                                   //Displaying all the Reports
     printf("\n---Landing Queue 1---\n");
 
@@ -194,11 +233,7 @@ void displayReports() {                                   //Displaying all the R
         printf("Runway Id=%d\n",arrival[i].runwayId);
         printf("\n\n---------------------------------------------------------------\n\n");
     }
-
-
-
 }
-
 bool isFull() {                                     //For Checking if the queues are full or not
     if(takeoffQueue1.counter >= size && takeoffQueue2.counter >= size && emergencyQueue.counter >= size ||
        landingQueue1.counter >= size && landingQueue2.counter >= size && emergencyQueue.counter >= size){
@@ -208,7 +243,9 @@ bool isFull() {                                     //For Checking if the queues
 }
 
 bool isEmpty() {                              //For Checking if the queues are empty or not
-    if(landingQueue1.counter >= 0 && landingQueue2.counter >= 0 || takeoffQueue1.counter >= 0 && takeoffQueue2.counter >= 0){
+    printf("\nLanding Queue one = %d",landingQueue1.counter);
+    printf("\nLanding Queue two = %d",landingQueue2.counter);
+    if(landingQueue1.counter < 0 && landingQueue2.counter < 0 || takeoffQueue1.counter <0 && takeoffQueue2.counter <0){
         return true;
     }
     return false;
