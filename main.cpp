@@ -1,23 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+int size = 5; //size of queue, globally declared to access it anywhere in the program.
 
-struct arival{
+struct Arival{
     int flightId,fuel,runwayId;
     char destination;
 
     struct time{
         int arivalDate,arivalTime,waitingTime,landingTime;
     };
-};
+}arival;
+struct stack{
+    int queue1[5],queue2[5],top1=0,top2=0;
+}stack;
 
 
 struct queue{
     int front=0,tail=0,counter=0;
     int queues[5];
-}landingQueue1,landingQueue2,takeoffQueue1,takeoffQueue2;
+}landingQueue1,landingQueue2,takeoffQueue1,takeoffQueue2,emergencyQueue;
 
-int size = 5; //size of queue, globally declared to access it anywhere in the program.
 bool enqueueFlights(int number,int status);  //Function for making queues of flights
 int dequeueFlights();
 bool isEmpty ();
@@ -91,19 +94,35 @@ bool enqueueFlights(int number,int status) {
             takeoffQueue2.counter++;
         }
     }else if (status == 3){
-        int top = 0, stack[size],counter=0,i;
-        //landingQueue1.tail--;
-        //landingQueue2.tail--;
-        for(i=0; i<size; i++){
-            if(number == landingQueue1.queues[i] || number == landingQueue2.queues[i]){
+        printf("\nIN STATUS=3\n");
+        for(int j=0; j<5; j++) {
+            printf("\nj=%d\n",j);
+            if (landingQueue1.queues[j] == number || landingQueue2.queues[j] == number) {
+                if(landingQueue1.queues[j] == number){
+                    printf("\nLanding QueueONE index=%d Emergency Flight = %d\n",j,number);
+                } else if(landingQueue2.queues[j] == number){
+                    printf("\nLanding QueueTWO index=%d Emergency Flight = %d\n",j,number);
+                }
+                emergencyQueue.queues[emergencyQueue.tail++] = number;
+                emergencyQueue.counter++;
                 break;
+            }else{
+                printf("\nIN ELSE\n");
+                stack.queue1[stack.top1++] = landingQueue1.queues[landingQueue1.tail--];
+                landingQueue1.counter--;
+
+                stack.queue2[stack.top2++] = landingQueue2.queues[landingQueue2.tail--];
+                landingQueue2.counter--;
             }
-            counter++;
-            printf("\nindex = %d is in Emergency\n",counter);
-
         }
-        printf("\n Flight Number = %d at index = %d is in Emergency\n",number,counter);
+        while (stack.top1 >=0 && stack.top2 >=0){
+            if()
+            landingQueue1.queues[landingQueue1.tail++] = stack.queue1[stack.top1--];
+            landingQueue1.counter++;
 
+            landingQueue2.queues[landingQueue2.tail++] = stack.queue2[stack.top2--];
+            landingQueue2.counter++;
+        }
     }
     return true;
 }
@@ -117,13 +136,15 @@ void displayReports() {
     for(int i=0; i<landingQueue2.counter; i++){
         printf(" %d ",landingQueue2.queues[i]);
     }
+    printf("\n---!EMERGENCY Queue!---\n");
+    for(int i=0; i<emergencyQueue.counter; i++){
+        printf(" %d ",emergencyQueue.queues[i]);
+    }
 }
 
 bool isFull() {
-    printf("\nlandingQueue1: %d", landingQueue1.counter);
-    printf("\nlandingQueue2: %d", landingQueue2.counter);
-
-    if(landingQueue1.counter >= size && landingQueue2.counter >= size || takeoffQueue1.counter >= size && takeoffQueue2.counter >= size ){
+    if(takeoffQueue1.counter >= size && takeoffQueue2.counter >= size && emergencyQueue.counter >= size ||
+       landingQueue1.counter >= size && landingQueue2.counter >= size && emergencyQueue.counter >= size){
         return true;
     }
     return false;
