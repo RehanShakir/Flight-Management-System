@@ -3,6 +3,10 @@
  
  **Features**
  
- Markup: Arrival of Flights
+ - Arrival of Flights
+ - Departure of Flights
+ - Confirmation of Landing
+ - Dispaly Differnet Reports
+ -
  
  **Flight Management System.cpp contain the code of the program**
