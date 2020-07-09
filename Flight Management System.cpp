@@ -55,7 +55,6 @@ void fuelCheck(){                        //Checking Fuel
 }
 
 void arrivalFlightsDetails(){             //Set Reports for Arrival Flights
-
     printf("\nPlease Enter the Following details of Arrival Flight\n");
 
     printf("\nFuel: ");
